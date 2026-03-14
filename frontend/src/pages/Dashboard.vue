@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { Plus, Search, Layers, Moon, Sun, Settings } from 'lucide-vue-next'
+import { Plus, Search, Layers, Moon, Sun, Settings, FolderPlus } from 'lucide-vue-next'
 import ProjectCard from '../components/ProjectCard.vue'
 import AddProjectDialog from '../components/AddProjectDialog.vue'
+import BulkAddDialog from '../components/BulkAddDialog.vue'
+import SettingsDialog from '../components/SettingsDialog.vue'
 import Button from '../components/ui/Button.vue'
 import Input from '../components/ui/Input.vue'
 import { fetchProjects } from '../services/api'
@@ -12,6 +14,8 @@ const projects = ref<Project[]>([])
 const search = ref('')
 const tagFilter = ref('')
 const isAddDialogOpen = ref(false)
+const isBulkAddDialogOpen = ref(false)
+const isSettingsDialogOpen = ref(false)
 const isDark = ref(true)
 
 const loadProjects = async () => {
@@ -76,10 +80,19 @@ const filteredProjects = computed(() => {
             <Plus class="mr-2 h-4 w-4" />
             Add Project
           </Button>
+
+          <Button variant="ghost" class="w-full justify-start text-left font-medium" @click="isBulkAddDialogOpen = true">
+            <FolderPlus class="mr-2 h-4 w-4" />
+            Bulk Add
+          </Button>
         </nav>
 
         <div class="mt-8">
           <h4 class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 dark:text-gray-400">Settings</h4>
+          <Button variant="ghost" class="w-full justify-start text-left font-medium" @click="isSettingsDialogOpen = true">
+            <Settings class="mr-2 h-4 w-4" />
+            AI Settings
+          </Button>
           <Button variant="ghost" class="w-full justify-start text-left font-medium" @click="toggleDark">
             <component :is="isDark ? Sun : Moon" class="mr-2 h-4 w-4" />
             {{ isDark ? 'Light' : 'Dark' }} Mode
@@ -101,6 +114,9 @@ const filteredProjects = computed(() => {
           />
         </div>
         <div class="flex items-center gap-4">
+          <Button @click="isBulkAddDialogOpen = true" variant="outline" size="sm" class="h-9">
+            <FolderPlus class="mr-2 h-4 w-4" /> Bulk Add
+          </Button>
           <Button @click="isAddDialogOpen = true" size="sm" class="h-9">
             <Plus class="mr-2 h-4 w-4" /> Add Project
           </Button>
@@ -120,7 +136,10 @@ const filteredProjects = computed(() => {
           <Layers class="h-10 w-10 text-gray-400 mb-4" />
           <h2 class="text-lg font-semibold mb-2">No projects found</h2>
           <p class="text-gray-500 max-w-sm mb-4">You haven't added any projects yet, or none match your search criteria.</p>
-          <Button @click="isAddDialogOpen = true">Add your first project</Button>
+          <div class="flex gap-4">
+            <Button @click="isAddDialogOpen = true">Add your first project</Button>
+            <Button variant="outline" @click="isBulkAddDialogOpen = true">Bulk add projects</Button>
+          </div>
         </div>
 
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -135,5 +154,7 @@ const filteredProjects = computed(() => {
     </main>
 
     <AddProjectDialog v-model:open="isAddDialogOpen" @added="loadProjects" />
+    <BulkAddDialog v-model:open="isBulkAddDialogOpen" @added="loadProjects" />
+    <SettingsDialog v-model:open="isSettingsDialogOpen" />
   </div>
 </template>

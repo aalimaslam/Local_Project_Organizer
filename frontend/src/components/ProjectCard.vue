@@ -33,7 +33,7 @@ const handleDelete = async () => {
 
 const handleStart = async () => {
   try {
-    await runProject(props.project.path)
+    await runProject(props.project.path, props.project.startCommand)
     alert(`Started project: ${props.project.name}`)
   } catch (error) {
     console.error(error)
@@ -72,19 +72,22 @@ const handleOpenFolder = async () => {
         <CardTitle>{{ project.name }}</CardTitle>
         <span class="inline-flex h-2 w-2 rounded-full font-bold" :class="project.status === 'running' ? 'bg-green-500' : 'bg-gray-300'"></span>
       </div>
-      <CardDescription class="mt-2">{{ project.description || 'No description provided.' }}</CardDescription>
+      <CardDescription class="mt-2 line-clamp-2" :title="project.description">{{ project.description || 'No description provided.' }}</CardDescription>
     </CardHeader>
 
     <CardContent class="flex-1">
       <div class="space-y-4">
         <div>
-          <p class="text-xs text-muted-foreground font-mono truncate" :title="project.path">
+          <p class="text-[10px] text-muted-foreground font-mono truncate" :title="project.path">
             {{ project.path }}
+          </p>
+          <p v-if="project.startCommand" class="text-[10px] text-blue-500 font-mono truncate mt-1" :title="project.startCommand">
+            $ {{ project.startCommand }}
           </p>
         </div>
         
         <div class="flex flex-wrap gap-2" v-if="project.tags && project.tags.length > 0">
-          <Badge v-for="tag in project.tags" :key="tag" variant="secondary">{{ tag }}</Badge>
+          <Badge v-for="tag in project.tags" :key="tag" variant="secondary" class="text-[10px] px-1">{{ tag }}</Badge>
         </div>
       </div>
     </CardContent>
