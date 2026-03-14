@@ -1,68 +1,69 @@
-# Dev Dashboard
+# 🚀 LocalOrg
 
-A local developer dashboard consisting of a Vue 3/Vite frontend and a Node.js/Express backend. This application allows you to manage and launch your local development projects from a single unified interface.
+LocalOrg is a professional, high-performance developer dashboard designed to centralize your local project management. It transforms a scattered folder of repositories into a beautiful, AI-powered command center.
 
-## 🚀 New Features
+![LocalOrg Preview](./assets/hero_preview.png)
 
-- **AI-Powered Analysis**: Automatically generate project descriptions, tags, and start commands using LLMs (Gemini, OpenAI, Kimi, or local Ollama).
-- **Bulk Add Projects**: Scan a parent directory and add multiple projects at once.
-- **Provider Agnostic**: Configure your own LLM provider and settings directly from the dashboard.
-- **One-Click Launch**: Start your projects with detected or custom commands directly from the UI.
+## ✨ Core Features
 
-## Prerequisites
+- 🏗️ **Smart Organization**: Pin high-priority projects, group them by logical context (Work, Personal, Lab), and use professional-grade multi-selection and bulk management.
+- 🔐 **Secret Vault**: A built-in, password-protected vault to store your API keys, environment variables, and sensitive credentials securely.
+- 🤖 **AI Batch Analysis**: Analyze dozens of projects in seconds. Automatically detect tech stacks (Vue, React, Python, etc.), descriptions, and optimal start commands using Gemini, OpenAI, or local Ollama.
+- 📝 **Rich Notes with Tagging**: Persistent project notes with custom labeling and real-time inline editing.
+- 🔌 **Live Port Manager**: Real-time detection of active ports with process name identification. Never wonder what's running on port 3000 again.
+- ⚡ **Performance & Scalability**: Backend powered by **SQLite** for instant loads and zero-friction setup.
+- 🚀 **One-Click Launch**: Detached process management to start your dev servers and open VS Code instantly.
+- 🔗 **Deep Integration**: Real-time Git status tracking (branch name, uncommitted changes, last commit time).
 
-- Node.js (v18+ recommended)
-- npm or yarn
+## 🛠️ Technology Stack
 
-## Project Structure
+- **Frontend**: Vue 3 (Composition API), Vite, Tailwind CSS, Lucide Icons.
+- **Backend**: Node.js, Express, Sequelize ORM (SQLite).
+- **Tooling**: Concurrently for unified development workflows.
 
-- `frontend/`: Vue 3, Vite, Tailwind CSS, Vue Router client application.
-- `backend/`: Node.js, Express backend that stores data in a local `projects.json` and `settings.json`.
+## 🚀 Getting Started
 
-## Getting Started
+### 1. Installation
 
-### 1. Start the Backend
-
-The backend runs on port 6001 by default.
-
-```bash
-cd backend
-npm install
-node server.js
-```
-
-### 2. Start the Frontend
-
-The frontend development server runs using Vite on port 6002.
+LocalOrg simplifies setup with a unified command:
 
 ```bash
-cd frontend
-npm install
-npm run dev -- --port 6002
+git clone https://github.com/yourusername/LocalOrg.git
+cd LocalOrg
+npm run install:all
 ```
 
-Open your browser and navigate to `http://localhost:6002`.
+### 2. Development
 
-## 🛠 Features
+Run both the frontend and backend with a single command:
 
-- **View locally configured projects**: Beautiful grid view of all your local dev environments.
-- **AI Settings**: Configure your LLM provider (Gemini, OpenAI, Kimi, Ollama, or any OpenAI-compatible API).
-- **Bulk Add**: Scan directory trees to quickly register multiple projects.
-- **Open in VS Code**: Quick access to your code.
-- **Open Folder**: Open the project directory in your file explorer.
-- **Simple JSON Storage**: Easy to manage and backup with `projects.json`.
+```bash
+npm run dev
+```
 
-## Contributing
+- **Dashboard**: `http://localhost:5173`
+- **Backend API**: `http://localhost:6001`
 
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/awesome-feature`)
-3. Commit your changes (`git commit -am 'Add an awesome feature'`)
-4. Push to the branch (`git push origin feature/awesome-feature`)
-5. Open a Pull Request
+### 3. Configuration
 
-## License
+- **Master Password**: On your first visit to the **Secret Vault**, you'll be prompted to set your master password.
+- **AI Settings**: Navigate to **AI Settings** in the dashboard to configure your API keys (Gemini, OpenAI, etc.).
 
-MIT License
+## 📖 Feature Highlights
 
-## Desktop Start icon 
-Copy the `start-dashboard.bat` file to your desktop or desired location to quickly launch both frontend and backend servers.
+### 🛡️ Secret Vault
+Securely manage your sensitive strings. Whether it's a shared AWS key or a local database password, the vault keeps it hidden and copyable in one click.
+
+### 🔌 Port Manager
+Scans your system for active TCP ports and matches them to your projects. It even identifies the process name (e.g., `node.exe`, `python.exe`) so you know exactly what's eating your resources.
+
+### 🔎 Smart Search
+Use `Ctrl + K` to focus the search bar instantly. Search by project name, description, tags, or even physical disk paths.
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).
+
+## 🤝 Contributing
+
+Contributions are welcome! Please check our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.

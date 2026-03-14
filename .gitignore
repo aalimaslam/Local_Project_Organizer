@@ -24,8 +24,11 @@ dist-ssr
 *.sln
 *.sw?
 
-# Data
+# Data & SQLite
 backend/projects.json
+backend/data/*.sqlite
+backend/data/*.sqlite-journal
+test_projects
 
 # Env
 .env
@@ -33,3 +36,5 @@ backend/projects.json
 .env.development.local
 .env.test.local
 .env.production.local
+frontend/.env
+backend/.env

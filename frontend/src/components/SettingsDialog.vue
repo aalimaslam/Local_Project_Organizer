@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import Dialog from './ui/Dialog.vue'
 import Input from './ui/Input.vue'
 import Label from './ui/Label.vue'
@@ -14,11 +14,23 @@ const emit = defineEmits<{
   (e: 'update:open', value: boolean): void
 }>()
 
+const providerDefaults = {
+  openai: { baseURL: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
+  gemini: { baseURL: 'https://generativelanguage.googleapis.com/v1beta', model: 'gemini-2.0-flash' },
+  kimi: { baseURL: 'https://api.moonshot.cn/v1', model: 'moonshot-v1-8k' },
+  ollama: { baseURL: 'http://localhost:11434', model: 'llama3.1' },
+  generic: { baseURL: 'https://api.openai.com/v1', model: 'gpt-4o-mini' }
+} as const
+
+const getProviderDefaults = (provider: string) => {
+  return providerDefaults[provider as keyof typeof providerDefaults] || providerDefaults.openai
+}
+
 const settings = ref<LLMSettings>({
   provider: 'openai',
   apiKey: '',
-  model: 'gpt-3.5-turbo',
-  baseURL: 'https://api.openai.com/v1'
+  model: getProviderDefaults('openai').model,
+  baseURL: getProviderDefaults('openai').baseURL
 })
 
 const loading = ref(false)
@@ -46,6 +58,25 @@ const save = async () => {
 }
 
 onMounted(loadSettings)
+
+watch(
+  () => settings.value.provider,
+  (nextProvider, previousProvider) => {
+    const nextDefaults = getProviderDefaults(nextProvider)
+    const previousDefaults = getProviderDefaults(previousProvider || 'openai')
+
+    const isModelCustom = settings.value.model && settings.value.model !== previousDefaults.model
+    const isBaseURLCustom = settings.value.baseURL && settings.value.baseURL !== previousDefaults.baseURL
+
+    if (!isModelCustom) {
+      settings.value.model = nextDefaults.model
+    }
+
+    if (!isBaseURLCustom || /api\.gemini\.com/i.test(settings.value.baseURL)) {
+      settings.value.baseURL = nextDefaults.baseURL
+    }
+  }
+)
 </script>
 
 <template>
@@ -53,7 +84,7 @@ onMounted(loadSettings)
     <div class="space-y-6">
       <div class="space-y-2">
         <h2 class="text-lg font-semibold dark:text-gray-100">LLM Settings</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Configure your AI provider for project analysis.</p>
+        <p class="text-sm text-gray-600 dark:text-gray-300">Configure your AI provider for project analysis.</p>
       </div>
 
       <form @submit.prevent="save" class="space-y-4">
@@ -62,7 +93,7 @@ onMounted(loadSettings)
           <select
             id="provider"
             v-model="settings.provider"
-            class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-gray-300"
+            class="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-blue-400"
           >
             <option value="openai">OpenAI</option>
             <option value="gemini">Gemini</option>

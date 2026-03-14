@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Sparkles, Loader2 } from 'lucide-vue-next'
+import { Sparkles, Loader2, Tag } from 'lucide-vue-next'
 import Dialog from './ui/Dialog.vue'
 import Input from './ui/Input.vue'
 import Label from './ui/Label.vue'
 import Button from './ui/Button.vue'
 import { addProject, analyzeProject } from '../services/api'
+import type { Label as LabelType } from '../services/api'
 
 const props = defineProps<{
   open: boolean
+  labels: LabelType[]
 }>()
 
 const emit = defineEmits<{
@@ -21,7 +23,8 @@ const form = ref({
   description: '',
   path: '',
   tags: '',
-  startCommand: ''
+  startCommand: '',
+  selectedLabels: [] as string[]
 })
 
 const analyzing = ref(false)
@@ -43,6 +46,14 @@ const handleAnalyze = async () => {
   }
 }
 
+const toggleLabel = (id: string) => {
+  if (form.value.selectedLabels.includes(id)) {
+    form.value.selectedLabels = form.value.selectedLabels.filter(l => l !== id)
+  } else {
+    form.value.selectedLabels.push(id)
+  }
+}
+
 const submit = async () => {
   if (!form.value.name || !form.value.path) return
   try {
@@ -55,12 +66,15 @@ const submit = async () => {
       description: form.value.description,
       path: form.value.path,
       tags: tagsArray,
-      startCommand: form.value.startCommand
+      labels: form.value.selectedLabels,
+      startCommand: form.value.startCommand,
+      pinned: false,
+      groupName: null,
     })
-    
+
     emit('added')
     emit('update:open', false)
-    form.value = { name: '', description: '', path: '', tags: '', startCommand: '' }
+    form.value = { name: '', description: '', path: '', tags: '', startCommand: '', selectedLabels: [] }
   } catch (error) {
     console.error('Failed to add project', error)
     alert('Failed to add project')
@@ -70,10 +84,10 @@ const submit = async () => {
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <div class="space-y-6">
-      <div class="space-y-2">
-        <h2 class="text-lg font-semibold dark:text-gray-100">Add Project</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Register a new local development project.</p>
+    <div class="space-y-5">
+      <div class="space-y-1">
+        <h2 class="text-lg font-semibold text-gray-100">Add Project</h2>
+        <p class="text-sm text-gray-400">Register a new local development project.</p>
       </div>
 
       <form @submit.prevent="submit" class="space-y-4">
@@ -81,9 +95,9 @@ const submit = async () => {
           <Label for="path">Local Path <span class="text-red-500">*</span></Label>
           <div class="flex gap-2">
             <Input id="path" v-model="form.path" placeholder="D:\projects\chat-app" required />
-            <Button type="button" variant="outline" @click="handleAnalyze" :disabled="analyzing || !form.path">
+            <Button type="button" variant="outline" @click="handleAnalyze" :disabled="analyzing || !form.path" title="AI Auto-fill">
               <Loader2 v-if="analyzing" class="h-4 w-4 animate-spin" />
-              <Sparkles v-else class="h-4 w-4" />
+              <Sparkles v-else class="h-4 w-4 text-indigo-400" />
             </Button>
           </div>
         </div>
@@ -106,6 +120,26 @@ const submit = async () => {
         <div class="space-y-2">
           <Label for="tags">Tags (comma-separated)</Label>
           <Input id="tags" v-model="form.tags" placeholder="Vue, Node, Socket.io" />
+        </div>
+
+        <!-- Labels -->
+        <div class="space-y-2" v-if="labels.length > 0">
+          <Label>Labels</Label>
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="label in labels"
+              :key="label.id"
+              type="button"
+              @click="toggleLabel(label.id)"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer"
+              :style="form.selectedLabels.includes(label.id)
+                ? { backgroundColor: label.color, color: '#fff', border: '1px solid ' + label.color }
+                : { backgroundColor: label.color + '18', color: label.color, border: '1px solid ' + label.color + '44' }"
+            >
+              <Tag class="h-3 w-3" />
+              {{ label.name }}
+            </button>
+          </div>
         </div>
 
         <div class="flex justify-end gap-3 pt-4">
