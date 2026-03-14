@@ -142,8 +142,14 @@ app.post('/analyze-project', async (req, res) => {
   if (!projectPath) return res.status(400).json({ error: 'Path is required' });
 
   try {
-    const context = {};
-    const filesToRead = ['package.json', 'README.md', 'requirements.txt', 'go.mod', 'pom.xml'];
+    const context = {
+      fileStructure: fs.readdirSync(projectPath)
+    };
+    const filesToRead = [
+      'package.json', 'README.md', 'requirements.txt', 'go.mod', 'pom.xml',
+      'Cargo.toml', 'Gemfile', 'composer.json', 'build.gradle', 'Makefile',
+      'docker-compose.yml'
+    ];
 
     for (const file of filesToRead) {
       const filePath = path.join(projectPath, file);
